@@ -4,8 +4,14 @@ import '../../config_dev.dart' as config;
 class CryptoService {
   final dio = Dio();
 
-  // @todo typing
-  dynamic request() async {
+  static final CryptoService _singleton = CryptoService._internal();
+
+  factory CryptoService() {
+    return _singleton;
+  }
+
+  CryptoService._internal();
+  dynamic getLatestCrypto() async {
     return await dio.get(
       '${config.apiBaseUrl}/cryptocurrency/listings/latest',
       options: Options(

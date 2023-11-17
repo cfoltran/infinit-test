@@ -1,2 +1,2 @@
 const String apiBaseUrl = 'https://pro-api.coinmarketcap.com/v1';
-const String apiKey = 'b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c';
+const String apiKey = '3b34a32d-9438-4c25-8ab9-af84b5916a83';
