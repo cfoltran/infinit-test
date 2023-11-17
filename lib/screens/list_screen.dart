@@ -47,40 +47,52 @@ class _ListScreenState extends State<ListScreen> {
           child: CircularProgressIndicator(),
         );
       }
-      return ListView.builder(
-        controller: _scrollController,
-        itemCount: state.cryptos?.length,
-        itemBuilder: (context, index) {
-          final crypto = state.cryptos![index];
-          return ListTile(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CryptoDetails(crypto: crypto),
-              ),
-            ),
-            leading: Image.network(
-              'https://s2.coinmarketcap.com/static/img/coins/64x64/${crypto.id}.png',
-              width: 24,
-              height: 24,
-            ),
-            title: Text(crypto.name),
-            subtitle: Text(CurrencyFormatService().formatUSD(crypto.marketCap)),
-            trailing:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(CurrencyFormatService().formatUSD(crypto.price)),
-              Text(
-                '${crypto.percentChange24h.toStringAsFixed(2)}%',
-                style: TextStyle(
-                  color: crypto.percentChange24h > 0
-                      ? Colors.green
-                      : Colors.redAccent,
+      return RefreshIndicator(
+          onRefresh: () async {
+            context.read<CryptoBloc>().add(const RefreshCryptos());
+            await context
+                .read<CryptoBloc>()
+                .stream
+                .firstWhere((state) => !state.loading);
+          },
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: state.cryptos?.length,
+            itemBuilder: (context, index) {
+              final crypto = state.cryptos![index];
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CryptoDetails(crypto: crypto),
+                      ));
+                  context.read<CryptoBloc>().add(const GetCryptos());
+                },
+                leading: Image.network(
+                  'https://s2.coinmarketcap.com/static/img/coins/64x64/${crypto.id}.png',
+                  width: 24,
+                  height: 24,
                 ),
-              ),
-            ]),
-          );
-        },
-      );
+                title: Text(crypto.name),
+                subtitle:
+                    Text(CurrencyFormatService().formatUSD(crypto.marketCap)),
+                trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(CurrencyFormatService().formatUSD(crypto.price)),
+                      Text(
+                        '${crypto.percentChange24h.toStringAsFixed(2)}%',
+                        style: TextStyle(
+                          color: crypto.percentChange24h > 0
+                              ? Colors.green
+                              : Colors.redAccent,
+                        ),
+                      ),
+                    ]),
+              );
+            },
+          ));
     });
   }
 }

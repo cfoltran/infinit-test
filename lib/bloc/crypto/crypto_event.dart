@@ -16,6 +16,10 @@ class GetCryptos extends CryptoEvent {
   List<Object> get props => [nextPage];
 }
 
+class RefreshCryptos extends CryptoEvent {
+  const RefreshCryptos();
+}
+
 class RefreshCryptoDetails extends CryptoEvent {
   final Crypto crypto;
 

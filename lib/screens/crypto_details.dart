@@ -40,7 +40,6 @@ class _CryptoDetailsState extends State<CryptoDetails> {
   }
 
   Widget _buildCryptoDetails() {
-    // final crypto = widget.crypto;
     return BlocBuilder<CryptoBloc, CryptoState>(
       builder: (context, state) {
         final crypto = state.cryptos?.firstWhere(
