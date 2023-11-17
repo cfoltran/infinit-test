@@ -12,10 +12,12 @@ part 'crypto_state.dart';
 
 class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
   CryptoBloc() : super(const CryptoState()) {
+    on<Init>(_initWatchlist);
     on<GetCryptos>(_getCryptos);
     on<RefreshCryptos>(_refreshCryptos);
     on<RefreshCryptoDetails>(_refreshCryptoDetails);
     on<AddToWatchList>(_addToWatchList);
+    add(const Init());
   }
 
   void _getCryptos(GetCryptos event, Emitter<CryptoState> emit) async {
@@ -27,7 +29,7 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
       List<Crypto>? cryptos =
           await CryptoService().getLatestCryptos(page: state.page);
       if (cryptos != null) {
-        emit(state.copyWith(cryptos: [...state.cryptos ?? [], ...cryptos]));
+        emit(state.copyWith(cryptos: [...state.cryptos, ...cryptos]));
       }
     } on DioException catch (dioError) {
       _showErrorToast(dioError);
@@ -63,6 +65,16 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
       debugPrint('CryptoBloc _refreshCryptoDetails $e - $stackTrace');
     } finally {
       emit(state.copyWith(loading: false));
+    }
+  }
+
+  Future<void> _initWatchlist(Init event, Emitter<CryptoState> emit) async {
+    try {
+      Box<Crypto> watchlist = await Hive.openBox<Crypto>('watchlist');
+      print(watchlist.values.toList());
+      emit(state.copyWith(watchlist: watchlist.values.toList()));
+    } catch (e) {
+      debugPrint('CryptoBloc _initWatchlist $e');
     }
   }
 

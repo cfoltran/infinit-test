@@ -1,4 +1,5 @@
 import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
+import 'package:cryptoo/common/crypto_list_tile.dart';
 import 'package:cryptoo/screens/crypto_details.dart';
 import 'package:cryptoo/services/currency_format_service.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class _ListScreenState extends State<ListScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(builder: (context, state) {
-      if (state.cryptos == null) {
+      if (state.loading) {
         return const Center(
           child: CircularProgressIndicator(),
         );
@@ -60,37 +61,7 @@ class _ListScreenState extends State<ListScreen> {
             itemCount: state.cryptos.length,
             itemBuilder: (context, index) {
               final crypto = state.cryptos[index];
-              return ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CryptoDetails(crypto: crypto),
-                      ));
-                  context.read<CryptoBloc>().add(const GetCryptos());
-                },
-                leading: Image.network(
-                  'https://s2.coinmarketcap.com/static/img/coins/64x64/${crypto.id}.png',
-                  width: 24,
-                  height: 24,
-                ),
-                title: Text(crypto.name),
-                subtitle:
-                    Text(CurrencyFormatService().formatUSD(crypto.marketCap)),
-                trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(CurrencyFormatService().formatUSD(crypto.price)),
-                      Text(
-                        '${crypto.percentChange24h.toStringAsFixed(2)}%',
-                        style: TextStyle(
-                          color: crypto.percentChange24h > 0
-                              ? Colors.green
-                              : Colors.redAccent,
-                        ),
-                      ),
-                    ]),
-              );
+              return CryptoListTile(crypto: crypto);
             },
           ));
     });

@@ -1,4 +1,5 @@
 import 'package:cryptoo/screens/list_screen.dart';
+import 'package:cryptoo/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -14,14 +15,17 @@ class _BottomNavigationState extends State<BottomNavigation> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final List<Widget> _widgetOptions = <Widget>[
     const ListScreen(),
-    const Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
+    const WatchListScreen(),
     const Text(
       'Index 2: School',
       style: optionStyle,
     ),
+  ];
+
+  final List<String> _titleOptions = <String>[
+    'List',
+    'Watchlist',
+    'Dashboard',
   ];
 
   void _onItemTapped(int index) {
@@ -33,7 +37,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(_titleOptions.elementAt(_selectedIndex)),
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

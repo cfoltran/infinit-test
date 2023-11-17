@@ -1,5 +1,9 @@
 part of 'crypto_bloc.dart';
 
+class Init extends CryptoEvent {
+  const Init();
+}
+
 class CryptoEvent extends Equatable {
   const CryptoEvent();
 
