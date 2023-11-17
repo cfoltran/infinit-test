@@ -14,14 +14,62 @@ class CryptoService {
 
   CryptoService._internal();
 
-  getLatestCrypto({page = 1, limit = 30}) async {
+  getLatestCryptos({page = 1, limit = 30, id}) async {
     try {
       Response<Map<String, dynamic>> response =
           await dio.get<Map<String, dynamic>>(
-        '${config.apiBaseUrl}/cryptocurrency/listings/latest',
+        '${config.apiBaseUrl}/v1/cryptocurrency/listings/latest',
         queryParameters: {
           'start': (page - 1) * limit + 1,
           'limit': limit,
+        },
+        options: Options(
+          headers: {
+            'X-CMC_PRO_API_KEY': config.apiKey,
+          },
+        ),
+      );
+      return Crypto.fromList(response.data!['data']);
+    } on DioException catch (_) {
+      rethrow;
+    } catch (e, stackTrace) {
+      debugPrint('getLatestCryptos $e - $stackTrace');
+      rethrow;
+    }
+  }
+
+  getCryptoInfos(int id) async {
+    try {
+      Response<Map<String, dynamic>> response =
+          await dio.get<Map<String, dynamic>>(
+        '${config.apiBaseUrl}/v2/cryptocurrency/quotes/latest',
+        queryParameters: {
+          'id': id,
+        },
+        options: Options(
+          headers: {
+            'X-CMC_PRO_API_KEY': config.apiKey,
+          },
+        ),
+      );
+      return Crypto.fromJson(response.data!['data'][id.toString()]);
+    } on DioException catch (_) {
+      rethrow;
+    } catch (e, stackTrace) {
+      debugPrint('getCryptoInfos $e - $stackTrace');
+      rethrow;
+    }
+  }
+
+  // Noooooo I need to pay for this 😢
+  getCryptoHistory(int id, {interval = 'daily'}) async {
+    try {
+      Response<Map<String, dynamic>> response =
+          await dio.get<Map<String, dynamic>>(
+        '${config.apiBaseUrl}/v3/cryptocurrency/quotes/historical',
+        queryParameters: {
+          'id': id,
+          'interval': 'daily',
         },
         options: Options(
           headers: {

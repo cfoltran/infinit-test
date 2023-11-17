@@ -15,3 +15,12 @@ class GetCryptos extends CryptoEvent {
   @override
   List<Object> get props => [nextPage];
 }
+
+class RefreshCryptoDetails extends CryptoEvent {
+  final int id;
+
+  const RefreshCryptoDetails({required this.id});
+
+  @override
+  List<Object> get props => [id];
+}

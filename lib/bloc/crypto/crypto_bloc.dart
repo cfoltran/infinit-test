@@ -12,6 +12,7 @@ part 'crypto_state.dart';
 class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
   CryptoBloc() : super(const CryptoState()) {
     on<GetCryptos>(_getCryptos);
+    on<RefreshCryptoDetails>(_refreshCryptoDetails);
   }
 
   void _getCryptos(GetCryptos event, Emitter<CryptoState> emit) async {
@@ -21,21 +22,45 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
         emit(state.copyWith(page: state.page + 1));
       }
       List<Crypto>? cryptos =
-          await CryptoService().getLatestCrypto(page: state.page);
+          await CryptoService().getLatestCryptos(page: state.page);
       if (cryptos != null) {
         emit(state.copyWith(cryptos: [...state.cryptos ?? [], ...cryptos]));
       }
     } on DioException catch (dioError) {
-      Fluttertoast.showToast(
-          msg: dioError.error.toString(),
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      _showErrorToast(dioError);
+    } catch (e, stackTrace) {
+      debugPrint('CryptoBloc _getCryptos $e - $stackTrace');
     } finally {
       emit(state.copyWith(loading: false));
     }
+  }
+
+  void _refreshCryptoDetails(
+      RefreshCryptoDetails event, Emitter<CryptoState> emit) async {
+    emit(state.copyWith(loading: true));
+    try {
+      Crypto? crypto = await CryptoService().getCryptoInfos(event.id);
+      // if (crypto != null) {
+      //   emit(state.copyWith(crypto: crypto));
+      // }
+    } on DioException catch (dioError) {
+      _showErrorToast(dioError);
+    } catch (e, stackTrace) {
+      debugPrint('CryptoBloc _refreshCryptoDetails $e - $stackTrace');
+    } finally {
+      emit(state.copyWith(loading: false));
+    }
+  }
+
+  void _showErrorToast(DioError dioError) {
+    Fluttertoast.showToast(
+        msg: dioError.response?.data['status']['error_message'] ??
+            dioError.message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }

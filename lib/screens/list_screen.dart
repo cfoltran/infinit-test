@@ -1,4 +1,5 @@
 import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
+import 'package:cryptoo/screens/crypto_details.dart';
 import 'package:cryptoo/services/currency_format_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,6 +53,12 @@ class _ListScreenState extends State<ListScreen> {
         itemBuilder: (context, index) {
           final crypto = state.cryptos![index];
           return ListTile(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CryptoDetails(crypto: crypto),
+              ),
+            ),
             leading: Image.network(
               'https://s2.coinmarketcap.com/static/img/coins/64x64/${crypto.id}.png',
               width: 24,
