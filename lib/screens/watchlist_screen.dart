@@ -26,7 +26,7 @@ class _WatchListScreenState extends State<WatchListScreen> {
                 onPressed: () => context
                     .read<CryptoBloc>()
                     .add(RemoveFromWatchList(crypto: crypto)),
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete_outline),
               ),
             );
           },

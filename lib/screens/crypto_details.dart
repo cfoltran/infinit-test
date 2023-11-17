@@ -18,7 +18,7 @@ class _CryptoDetailsState extends State<CryptoDetails> {
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(
       builder: (context, state) {
-        final crypto = state.cryptos?.firstWhere(
+        final crypto = state.cryptos.firstWhere(
           (c) => c.id == widget.crypto.id,
           orElse: () => widget.crypto,
         );
