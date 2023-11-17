@@ -1,5 +1,6 @@
 import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
 import 'package:cryptoo/models/crypto.dart';
+import 'package:cryptoo/services/currency_format_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,9 +16,7 @@ class CryptoDetails extends StatefulWidget {
 class _CryptoDetailsState extends State<CryptoDetails> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => CryptoBloc(),
-        child: Scaffold(appBar: _buildAppBar(), body: _buildCryptoDetails()));
+    return Scaffold(appBar: _buildAppBar(), body: _buildCryptoDetails());
   }
 
   AppBar _buildAppBar() {
@@ -41,20 +40,57 @@ class _CryptoDetailsState extends State<CryptoDetails> {
   }
 
   Widget _buildCryptoDetails() {
+    final crypto = widget.crypto;
     return BlocBuilder<CryptoBloc, CryptoState>(
       builder: (context, state) {
         return RefreshIndicator(
-            onRefresh: () async {
-              context
-                  .read<CryptoBloc>()
-                  .add(RefreshCryptoDetails(id: widget.crypto.id));
-            },
-            child: ListView(
-              children: [
-                Text(''),
-              ],
-            ));
+          onRefresh: () async {
+            context.read<CryptoBloc>().add(RefreshCryptoDetails(id: crypto.id));
+          },
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildDetailItem('Name', crypto.name),
+              _buildDetailItem('Symbol', crypto.symbol),
+              _buildDetailItem('Slug', crypto.slug),
+              _buildDetailItem('Is Fiat', crypto.isFiat ? 'Yes' : 'No'),
+              _buildDetailItem(
+                  'Circulating Supply', crypto.circulatingSupply.toString()),
+              _buildDetailItem('Total Supply', crypto.totalSupply.toString()),
+              _buildDetailItem(
+                  'Max Supply', crypto.maxSupply?.toString() ?? 'N/A'),
+              _buildDetailItem(
+                  'Date Added', crypto.dateAdded.toIso8601String()),
+              _buildDetailItem(
+                  'Market Pairs', crypto.numMarketPairs.toString()),
+              _buildDetailItem('CMC Rank', crypto.cmcRank.toString()),
+              _buildDetailItem(
+                  'Last Updated', crypto.lastUpdated.toIso8601String()),
+              _buildDetailItem('Price (USD)',
+                  CurrencyFormatService().formatUSD(crypto.price)),
+              _buildDetailItem('24h Volume Change',
+                  CurrencyFormatService().formatUSD(crypto.volumeChange24h)),
+              _buildDetailItem(
+                  '24h Percent Change', '${crypto.percentChange24h}%'),
+              _buildDetailItem('Market Cap',
+                  CurrencyFormatService().formatUSD(crypto.marketCap)),
+            ],
+          ),
+        );
       },
+    );
+  }
+
+  Widget _buildDetailItem(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
+      ),
     );
   }
 }

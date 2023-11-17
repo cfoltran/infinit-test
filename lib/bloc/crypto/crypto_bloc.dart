@@ -40,9 +40,17 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
     emit(state.copyWith(loading: true));
     try {
       Crypto? crypto = await CryptoService().getCryptoInfos(event.id);
-      // if (crypto != null) {
-      //   emit(state.copyWith(crypto: crypto));
-      // }
+      if (crypto != null) {
+        print(crypto!.percentChange24h);
+        List<Crypto> cryptos = state.cryptos ?? [];
+        int index = cryptos.indexWhere((element) => element.id == crypto.id);
+
+        if (index != -1) {
+          cryptos[index] = crypto;
+          emit(state.copyWith(cryptos: cryptos));
+          print(crypto.percentChange24h);
+        }
+      }
     } on DioException catch (dioError) {
       _showErrorToast(dioError);
     } catch (e, stackTrace) {

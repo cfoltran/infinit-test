@@ -1,7 +1,5 @@
-import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
 import 'package:cryptoo/screens/list_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -15,10 +13,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final List<Widget> _widgetOptions = <Widget>[
-    BlocProvider(
-      create: (context) => CryptoBloc()..add(const GetCryptos()),
-      child: const ListScreen(),
-    ),
+    const ListScreen(),
     const Text(
       'Index 1: Business',
       style: optionStyle,
