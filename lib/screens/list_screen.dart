@@ -57,9 +57,9 @@ class _ListScreenState extends State<ListScreen> {
           },
           child: ListView.builder(
             controller: _scrollController,
-            itemCount: state.cryptos?.length,
+            itemCount: state.cryptos.length,
             itemBuilder: (context, index) {
-              final crypto = state.cryptos![index];
+              final crypto = state.cryptos[index];
               return ListTile(
                 onTap: () {
                   Navigator.push(

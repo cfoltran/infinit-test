@@ -16,10 +16,20 @@ class CryptoDetails extends StatefulWidget {
 class _CryptoDetailsState extends State<CryptoDetails> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: _buildCryptoDetails());
+    return BlocBuilder<CryptoBloc, CryptoState>(
+      builder: (context, state) {
+        final crypto = state.cryptos?.firstWhere(
+          (c) => c.id == widget.crypto.id,
+          orElse: () => widget.crypto,
+        );
+        return Scaffold(
+            appBar: _buildAppBar(state, crypto),
+            body: _buildCryptoDetails(crypto));
+      },
+    );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(CryptoState state, Crypto? crypto) {
     return AppBar(
       title: Row(children: [
         Image.network(
@@ -32,64 +42,57 @@ class _CryptoDetailsState extends State<CryptoDetails> {
       ]),
       actions: [
         IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.star_outline),
+          onPressed: () {
+            if (crypto != null) {
+              context.read<CryptoBloc>().add(AddToWatchList(crypto: crypto));
+            }
+          },
+          icon: Icon(
+              state.watchlist.any((c) => c.id == widget.crypto.id)
+                  ? Icons.star
+                  : Icons.star_outline,
+              color: Colors.yellow),
         )
       ],
     );
   }
 
-  Widget _buildCryptoDetails() {
-    return BlocBuilder<CryptoBloc, CryptoState>(
-      builder: (context, state) {
-        final crypto = state.cryptos?.firstWhere(
-          (c) => c.id == widget.crypto.id,
-          orElse: () => widget.crypto,
-        );
+  Widget _buildCryptoDetails(Crypto? crypto) {
+    if (crypto == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-        if (crypto == null) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async {
-            context
-                .read<CryptoBloc>()
-                .add(RefreshCryptoDetails(crypto: crypto));
-          },
-          child: ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              _buildDetailItem('Name', crypto.name),
-              _buildDetailItem('Symbol', crypto.symbol),
-              _buildDetailItem('Slug', crypto.slug),
-              _buildDetailItem('Is Fiat', crypto.isFiat ? 'Yes' : 'No'),
-              _buildDetailItem(
-                  'Circulating Supply', crypto.circulatingSupply.toString()),
-              _buildDetailItem('Total Supply', crypto.totalSupply.toString()),
-              _buildDetailItem(
-                  'Max Supply', crypto.maxSupply?.toString() ?? 'N/A'),
-              _buildDetailItem(
-                  'Date Added', crypto.dateAdded.toIso8601String()),
-              _buildDetailItem(
-                  'Market Pairs', crypto.numMarketPairs.toString()),
-              _buildDetailItem('CMC Rank', crypto.cmcRank.toString()),
-              _buildDetailItem(
-                  'Last Updated', crypto.lastUpdated.toIso8601String()),
-              _buildDetailItem('Price (USD)',
-                  CurrencyFormatService().formatUSD(crypto.price)),
-              _buildDetailItem('24h Volume Change',
-                  CurrencyFormatService().formatUSD(crypto.volumeChange24h)),
-              _buildDetailItem(
-                  '24h Percent Change', '${crypto.percentChange24h}%'),
-              _buildDetailItem('Market Cap',
-                  CurrencyFormatService().formatUSD(crypto.marketCap)),
-            ],
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<CryptoBloc>().add(RefreshCryptoDetails(crypto: crypto));
       },
+      child: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          _buildDetailItem('Name', crypto.name),
+          _buildDetailItem('Symbol', crypto.symbol),
+          _buildDetailItem('Slug', crypto.slug),
+          _buildDetailItem('Is Fiat', crypto.isFiat ? 'Yes' : 'No'),
+          _buildDetailItem(
+              'Circulating Supply', crypto.circulatingSupply.toString()),
+          _buildDetailItem('Total Supply', crypto.totalSupply.toString()),
+          _buildDetailItem('Max Supply', crypto.maxSupply?.toString() ?? 'N/A'),
+          _buildDetailItem('Date Added', crypto.dateAdded.toIso8601String()),
+          _buildDetailItem('Market Pairs', crypto.numMarketPairs.toString()),
+          _buildDetailItem('CMC Rank', crypto.cmcRank.toString()),
+          _buildDetailItem(
+              'Last Updated', crypto.lastUpdated.toIso8601String()),
+          _buildDetailItem(
+              'Price (USD)', CurrencyFormatService().formatUSD(crypto.price)),
+          _buildDetailItem('24h Volume Change',
+              CurrencyFormatService().formatUSD(crypto.volumeChange24h)),
+          _buildDetailItem('24h Percent Change', '${crypto.percentChange24h}%'),
+          _buildDetailItem('Market Cap',
+              CurrencyFormatService().formatUSD(crypto.marketCap)),
+        ],
+      ),
     );
   }
 

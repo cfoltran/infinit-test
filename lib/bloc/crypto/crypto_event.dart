@@ -28,3 +28,12 @@ class RefreshCryptoDetails extends CryptoEvent {
   @override
   List<Object> get props => [crypto];
 }
+
+class AddToWatchList extends CryptoEvent {
+  final Crypto crypto;
+
+  const AddToWatchList({required this.crypto});
+
+  @override
+  List<Object> get props => [crypto];
+}

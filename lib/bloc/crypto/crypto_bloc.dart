@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 
 part 'crypto_event.dart';
 part 'crypto_state.dart';
@@ -14,6 +15,7 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
     on<GetCryptos>(_getCryptos);
     on<RefreshCryptos>(_refreshCryptos);
     on<RefreshCryptoDetails>(_refreshCryptoDetails);
+    on<AddToWatchList>(_addToWatchList);
   }
 
   void _getCryptos(GetCryptos event, Emitter<CryptoState> emit) async {
@@ -61,6 +63,20 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
       debugPrint('CryptoBloc _refreshCryptoDetails $e - $stackTrace');
     } finally {
       emit(state.copyWith(loading: false));
+    }
+  }
+
+  void _addToWatchList(AddToWatchList event, Emitter<CryptoState> emit) async {
+    try {
+      Box<Crypto> watchlist = await Hive.openBox<Crypto>('watchlist');
+      if (watchlist.containsKey(event.crypto.id)) {
+        watchlist.delete(event.crypto.id);
+      } else {
+        watchlist.put(event.crypto.id, event.crypto);
+      }
+      emit(state.copyWith(watchlist: watchlist.values.toList()));
+    } catch (e, stackTrace) {
+      debugPrint('CryptoBloc _addToWatchList $e - $stackTrace');
     }
   }
 
