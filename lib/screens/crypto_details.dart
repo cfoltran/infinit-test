@@ -40,12 +40,25 @@ class _CryptoDetailsState extends State<CryptoDetails> {
   }
 
   Widget _buildCryptoDetails() {
-    final crypto = widget.crypto;
+    // final crypto = widget.crypto;
     return BlocBuilder<CryptoBloc, CryptoState>(
       builder: (context, state) {
+        final crypto = state.cryptos?.firstWhere(
+          (c) => c.id == widget.crypto.id,
+          orElse: () => widget.crypto,
+        );
+
+        if (crypto == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
         return RefreshIndicator(
           onRefresh: () async {
-            context.read<CryptoBloc>().add(RefreshCryptoDetails(id: crypto.id));
+            context
+                .read<CryptoBloc>()
+                .add(RefreshCryptoDetails(crypto: crypto));
           },
           child: ListView(
             padding: const EdgeInsets.all(16.0),

@@ -39,9 +39,9 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
       RefreshCryptoDetails event, Emitter<CryptoState> emit) async {
     emit(state.copyWith(loading: true));
     try {
-      Crypto? crypto = await CryptoService().getCryptoInfos(event.id);
+      Crypto? crypto = await CryptoService().getCryptoInfos(event.crypto.id);
       if (crypto != null) {
-        print(crypto!.percentChange24h);
+        // print(crypto!.percentChange24h);
         List<Crypto> cryptos = state.cryptos ?? [];
         int index = cryptos.indexWhere((element) => element.id == crypto.id);
 

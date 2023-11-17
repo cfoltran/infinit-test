@@ -17,10 +17,10 @@ class GetCryptos extends CryptoEvent {
 }
 
 class RefreshCryptoDetails extends CryptoEvent {
-  final int id;
+  final Crypto crypto;
 
-  const RefreshCryptoDetails({required this.id});
+  const RefreshCryptoDetails({required this.crypto});
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [crypto];
 }
