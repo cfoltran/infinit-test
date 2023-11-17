@@ -1,7 +1,11 @@
 import 'package:cryptoo/bottom_nav.dart';
+import 'package:cryptoo/models/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(CryptoAdapter());
   runApp(const MyApp());
 }
 

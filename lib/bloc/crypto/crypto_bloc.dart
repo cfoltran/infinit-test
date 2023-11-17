@@ -1,3 +1,4 @@
+import 'package:cryptoo/models/crypto.dart';
 import 'package:cryptoo/services/crypto_service.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
@@ -16,16 +17,9 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
   void _getCryptos(GetCryptos event, Emitter<CryptoState> emit) async {
     emit(state.copyWith(loading: true));
     try {
-      final response = await CryptoService().getLatestCrypto();
-      if (response != null) {
-        Fluttertoast.showToast(
-            msg: "This is Center Short Toast",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+      List<Crypto>? cryptos = await CryptoService().getLatestCrypto();
+      if (cryptos != null) {
+        emit(state.copyWith(cryptos: cryptos));
       }
     } on DioException catch (dioError) {
       Fluttertoast.showToast(

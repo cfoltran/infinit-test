@@ -1,6 +1,6 @@
 part of 'crypto_bloc.dart';
 
-sealed class CryptoEvent extends Equatable {
+class CryptoEvent extends Equatable {
   const CryptoEvent();
 
   @override
