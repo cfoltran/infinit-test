@@ -11,15 +11,43 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom && !context.read<CryptoBloc>().state.loading) {
+      context.read<CryptoBloc>().add(const GetCryptos(nextPage: true));
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(builder: (context, state) {
-      if (state.loading && state.cryptos == null) {
+      if (state.cryptos == null) {
         return const Center(
           child: CircularProgressIndicator(),
         );
       }
       return ListView.builder(
+        controller: _scrollController,
         itemCount: state.cryptos?.length,
         itemBuilder: (context, index) {
           final crypto = state.cryptos![index];

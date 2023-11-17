@@ -8,5 +8,10 @@ class CryptoEvent extends Equatable {
 }
 
 class GetCryptos extends CryptoEvent {
-  const GetCryptos();
+  final bool nextPage;
+
+  const GetCryptos({this.nextPage = false});
+
+  @override
+  List<Object> get props => [nextPage];
 }

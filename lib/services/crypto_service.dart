@@ -14,11 +14,15 @@ class CryptoService {
 
   CryptoService._internal();
 
-  getLatestCrypto() async {
+  getLatestCrypto({page = 1, limit = 30}) async {
     try {
       Response<Map<String, dynamic>> response =
           await dio.get<Map<String, dynamic>>(
         '${config.apiBaseUrl}/cryptocurrency/listings/latest',
+        queryParameters: {
+          'start': (page - 1) * limit + 1,
+          'limit': limit,
+        },
         options: Options(
           headers: {
             'X-CMC_PRO_API_KEY': config.apiKey,

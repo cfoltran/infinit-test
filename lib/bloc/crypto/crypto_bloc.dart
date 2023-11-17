@@ -17,9 +17,13 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
   void _getCryptos(GetCryptos event, Emitter<CryptoState> emit) async {
     emit(state.copyWith(loading: true));
     try {
-      List<Crypto>? cryptos = await CryptoService().getLatestCrypto();
+      if (event.nextPage) {
+        emit(state.copyWith(page: state.page + 1));
+      }
+      List<Crypto>? cryptos =
+          await CryptoService().getLatestCrypto(page: state.page);
       if (cryptos != null) {
-        emit(state.copyWith(cryptos: cryptos));
+        emit(state.copyWith(cryptos: [...state.cryptos ?? [], ...cryptos]));
       }
     } on DioException catch (dioError) {
       Fluttertoast.showToast(
