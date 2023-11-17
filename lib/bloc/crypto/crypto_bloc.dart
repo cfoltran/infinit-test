@@ -17,6 +17,7 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
     on<RefreshCryptos>(_refreshCryptos);
     on<RefreshCryptoDetails>(_refreshCryptoDetails);
     on<AddToWatchList>(_addToWatchList);
+    on<RemoveFromWatchList>(_removeFromWatchList);
     add(const Init());
   }
 
@@ -51,7 +52,7 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
     try {
       Crypto? crypto = await CryptoService().getCryptoInfos(event.crypto.id);
       if (crypto != null) {
-        List<Crypto> cryptos = state.cryptos ?? [];
+        List<Crypto> cryptos = state.cryptos;
         int index = cryptos.indexWhere((element) => element.id == crypto.id);
 
         if (index != -1) {
@@ -71,7 +72,6 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
   Future<void> _initWatchlist(Init event, Emitter<CryptoState> emit) async {
     try {
       Box<Crypto> watchlist = await Hive.openBox<Crypto>('watchlist');
-      print(watchlist.values.toList());
       emit(state.copyWith(watchlist: watchlist.values.toList()));
     } catch (e) {
       debugPrint('CryptoBloc _initWatchlist $e');
@@ -89,6 +89,17 @@ class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
       emit(state.copyWith(watchlist: watchlist.values.toList()));
     } catch (e, stackTrace) {
       debugPrint('CryptoBloc _addToWatchList $e - $stackTrace');
+    }
+  }
+
+  void _removeFromWatchList(
+      RemoveFromWatchList event, Emitter<CryptoState> emit) async {
+    try {
+      Box<Crypto> watchlist = await Hive.openBox<Crypto>('watchlist');
+      watchlist.delete(event.crypto.id);
+      emit(state.copyWith(watchlist: watchlist.values.toList()));
+    } catch (e, stackTrace) {
+      debugPrint('CryptoBloc _removeFromWatchList $e - $stackTrace');
     }
   }
 

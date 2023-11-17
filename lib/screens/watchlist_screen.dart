@@ -19,7 +19,16 @@ class _WatchListScreenState extends State<WatchListScreen> {
           itemCount: state.watchlist.length,
           itemBuilder: (_, index) {
             final crypto = state.watchlist[index];
-            return CryptoListTile(crypto: crypto);
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: CryptoListTile(crypto: crypto),
+              trailing: IconButton(
+                onPressed: () => context
+                    .read<CryptoBloc>()
+                    .add(RemoveFromWatchList(crypto: crypto)),
+                icon: const Icon(Icons.delete),
+              ),
+            );
           },
         );
       },

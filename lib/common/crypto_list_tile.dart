@@ -1,5 +1,3 @@
-// stateless widget
-
 import 'package:cryptoo/models/crypto.dart';
 import 'package:cryptoo/screens/crypto_details.dart';
 import 'package:cryptoo/services/currency_format_service.dart';
@@ -32,16 +30,20 @@ class CryptoListTile extends StatelessWidget {
       ),
       title: Text(crypto.name),
       subtitle: Text(CurrencyFormatService().formatUSD(crypto.marketCap)),
-      trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(CurrencyFormatService().formatUSD(crypto.price)),
-        Text(
-          '${crypto.percentChange24h.toStringAsFixed(2)}%',
-          style: TextStyle(
-            color:
-                crypto.percentChange24h > 0 ? Colors.green : Colors.redAccent,
-          ),
-        ),
-      ]),
+      trailing: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(CurrencyFormatService().formatUSD(crypto.price)),
+            Text(
+              '${crypto.percentChange24h.toStringAsFixed(2)}%',
+              style: TextStyle(
+                color: crypto.percentChange24h > 0
+                    ? Colors.green
+                    : Colors.redAccent,
+              ),
+            ),
+          ]),
     );
   }
 }

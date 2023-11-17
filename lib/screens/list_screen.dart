@@ -1,7 +1,7 @@
+import 'dart:async';
+
 import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
 import 'package:cryptoo/common/crypto_list_tile.dart';
-import 'package:cryptoo/screens/crypto_details.dart';
-import 'package:cryptoo/services/currency_format_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +14,7 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -24,12 +25,17 @@ class _ListScreenState extends State<ListScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
   void _onScroll() {
     if (_isBottom && !context.read<CryptoBloc>().state.loading) {
-      context.read<CryptoBloc>().add(const GetCryptos(nextPage: true));
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      // uggly hack to avoid multiple calls (i'm limited by the api)
+      _debounce = Timer(const Duration(milliseconds: 100), () {
+        context.read<CryptoBloc>().add(const GetCryptos(nextPage: true));
+      });
     }
   }
 
@@ -43,11 +49,6 @@ class _ListScreenState extends State<ListScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(builder: (context, state) {
-      if (state.loading) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
       return RefreshIndicator(
           onRefresh: () async {
             context.read<CryptoBloc>().add(const RefreshCryptos());

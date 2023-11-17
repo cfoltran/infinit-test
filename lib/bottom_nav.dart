@@ -1,6 +1,8 @@
+import 'package:cryptoo/bloc/crypto/crypto_bloc.dart';
 import 'package:cryptoo/screens/list_screen.dart';
 import 'package:cryptoo/screens/watchlist_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -11,21 +13,9 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final List<Widget> _widgetOptions = <Widget>[
     const ListScreen(),
     const WatchListScreen(),
-    const Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
-
-  final List<String> _titleOptions = <String>[
-    'List',
-    'Watchlist',
-    'Dashboard',
   ];
 
   void _onItemTapped(int index) {
@@ -36,32 +26,41 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_titleOptions.elementAt(_selectedIndex)),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.remove_red_eye_outlined),
-            label: 'Watchlist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            label: 'Dashboard',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
+    return BlocBuilder<CryptoBloc, CryptoState>(builder: (_, state) {
+      return Scaffold(
+        appBar: _buildAppBar(context, state.page),
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'List',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.remove_red_eye_outlined),
+              label: 'Watchlist',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: _onItemTapped,
+        ),
+      );
+    });
+  }
+
+  AppBar _buildAppBar(BuildContext context, int page) {
+    return AppBar(
+      title: Text(
+          _selectedIndex == 0 ? 'List page ${page.toString()}' : 'Watchlist'),
+      actions: [
+        IconButton(
+          onPressed: () => context.read<CryptoBloc>().add(const GetCryptos()),
+          icon: const Icon(Icons.refresh),
+        ),
+      ],
     );
   }
 }

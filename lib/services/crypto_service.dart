@@ -14,7 +14,7 @@ class CryptoService {
 
   CryptoService._internal();
 
-  getLatestCryptos({page = 1, limit = 30, id}) async {
+  getLatestCryptos({page = 1, limit = 20, id}) async {
     try {
       Response<Map<String, dynamic>> response =
           await dio.get<Map<String, dynamic>>(
@@ -57,31 +57,6 @@ class CryptoService {
       rethrow;
     } catch (e, stackTrace) {
       debugPrint('getCryptoInfos $e - $stackTrace');
-      rethrow;
-    }
-  }
-
-  // Noooooo I need to pay for this 😢
-  getCryptoHistory(int id, {interval = 'daily'}) async {
-    try {
-      Response<Map<String, dynamic>> response =
-          await dio.get<Map<String, dynamic>>(
-        '${config.apiBaseUrl}/v3/cryptocurrency/quotes/historical',
-        queryParameters: {
-          'id': id,
-          'interval': 'daily',
-        },
-        options: Options(
-          headers: {
-            'X-CMC_PRO_API_KEY': config.apiKey,
-          },
-        ),
-      );
-      return Crypto.fromList(response.data!['data']);
-    } on DioException catch (_) {
-      rethrow;
-    } catch (e, stackTrace) {
-      debugPrint('RpApiService getSth $e - $stackTrace');
       rethrow;
     }
   }

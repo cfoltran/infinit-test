@@ -41,3 +41,12 @@ class AddToWatchList extends CryptoEvent {
   @override
   List<Object> get props => [crypto];
 }
+
+class RemoveFromWatchList extends CryptoEvent {
+  final Crypto crypto;
+
+  const RemoveFromWatchList({required this.crypto});
+
+  @override
+  List<Object> get props => [crypto];
+}
