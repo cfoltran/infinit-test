@@ -3,14 +3,9 @@ import 'package:cryptoo/common/crypto_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class WatchListScreen extends StatefulWidget {
+class WatchListScreen extends StatelessWidget {
   const WatchListScreen({Key? key}) : super(key: key);
 
-  @override
-  _WatchListScreenState createState() => _WatchListScreenState();
-}
-
-class _WatchListScreenState extends State<WatchListScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(
@@ -18,15 +13,20 @@ class _WatchListScreenState extends State<WatchListScreen> {
         return ListView.builder(
           itemCount: state.watchlist.length,
           itemBuilder: (_, index) {
-            final crypto = state.watchlist[index];
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: CryptoListTile(crypto: crypto),
-              trailing: IconButton(
-                onPressed: () => context
-                    .read<CryptoBloc>()
-                    .add(RemoveFromWatchList(crypto: crypto)),
-                icon: const Icon(Icons.delete_outline),
+            final crypto = state.cryptos
+                .firstWhere((c) => c.id == state.watchlist[index].id);
+            return Padding(
+              padding: EdgeInsets.zero,
+              child: Row(
+                children: [
+                  Expanded(child: CryptoListTile(crypto: crypto)),
+                  IconButton(
+                    onPressed: () => context
+                        .read<CryptoBloc>()
+                        .add(RemoveFromWatchList(crypto: crypto)),
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  ),
+                ],
               ),
             );
           },
