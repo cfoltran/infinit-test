@@ -10,6 +10,16 @@ class WatchListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CryptoBloc, CryptoState>(
       builder: (_, state) {
+        if (state.loading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state.watchlist.isEmpty) {
+          return const Center(
+            child: Text('No crypto in watchlist'),
+          );
+        }
         return ListView.builder(
           itemCount: state.watchlist.length,
           itemBuilder: (_, index) {

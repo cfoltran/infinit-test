@@ -57,7 +57,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
           _selectedIndex == 0 ? 'List page ${page.toString()}' : 'Watchlist'),
       actions: [
         IconButton(
-          onPressed: () => context.read<CryptoBloc>().add(const GetCryptos()),
+          onPressed: () =>
+              context.read<CryptoBloc>().add(const RefreshCryptos()),
           icon: const Icon(Icons.refresh),
         ),
       ],
